@@ -206,7 +206,7 @@ func (w *walker) walk(rawURL string) {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "usage: %s <sitemap-url> [<sitemap-url>...]\n", os.Args[0])
+		fmt.Fprintln(os.Stderr, "usage: sitemap-validator <sitemap-url> [<sitemap-url>...]")
 		os.Exit(2)
 	}
 	w := &walker{seen: make(map[string]struct{})}

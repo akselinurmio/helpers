@@ -1,0 +1,11 @@
+sitemap-validator
+
+Build:
+    go build
+
+Run (one or more sitemap URLs):
+    ./sitemap-validator https://areena.yle.fi/sitemap.xml
+    ./sitemap-validator https://areena.yle.fi/sitemap.xml https://arenan.yle.fi/sitemap.xml
+
+Output (stderr): one line per violation. Exit 0 if valid, exit 1 if any errors.
+    <sitemap-url>: <violation>

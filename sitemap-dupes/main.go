@@ -89,7 +89,7 @@ func walkSitemapTree(url string) error {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "usage: %s <sitemap-url> [<sitemap-url>...]\n", os.Args[0])
+		fmt.Fprintln(os.Stderr, "usage: sitemap-dupes <sitemap-url> [<sitemap-url>...]")
 		os.Exit(2)
 	}
 	for _, url := range os.Args[1:] {
