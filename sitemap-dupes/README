@@ -1,0 +1,11 @@
+sitemap-dupes
+
+Build:
+    go build
+
+Run (one or more sitemap URLs):
+    ./sitemap-dupes https://areena.yle.fi/sitemap.xml
+    ./sitemap-dupes https://areena.yle.fi/sitemap.xml https://arenan.yle.fi/sitemap.xml
+
+Output (stdout): one row per duplicate URL within a single sitemap file.
+    <count>\t<url>\t<source-sitemap-url>
