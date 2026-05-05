@@ -1,0 +1,2 @@
+https://areena.yle.fi/sitemap-videos-108.xml: XML syntax error on line 579: illegal character code U+000C
+https://areena.yle.fi/sitemap-videos-71.xml: XML syntax error on line 179: illegal character code U+0002
