@@ -4,8 +4,10 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -59,8 +61,8 @@ func reportDuplicates(sourceURL string, s *sitemap) {
 	for _, u := range s.URLs {
 		counts[u]++
 	}
-	for u, n := range counts {
-		if n > 1 {
+	for _, u := range slices.Sorted(maps.Keys(counts)) {
+		if n := counts[u]; n > 1 {
 			fmt.Printf("%d\t%s\t%s\n", n, u, sourceURL)
 		}
 	}
