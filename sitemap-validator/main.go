@@ -103,7 +103,7 @@ func fetch(rawURL string) ([]byte, error) {
 		return nil, fmt.Errorf("HTTP %s", resp.Status)
 	}
 	if ct := resp.Header.Get("Content-Type"); !strings.Contains(ct, "xml") {
-		return nil, fmt.Errorf("GET %s: unexpected content-type %q", rawURL, ct)
+		return nil, fmt.Errorf("unexpected content-type %q", ct)
 	}
 	return io.ReadAll(resp.Body)
 }
@@ -184,7 +184,7 @@ func (w *walker) walk(rawURL string) {
 
 	data, err := fetch(rawURL)
 	if err != nil {
-		w.errf(rawURL, "fetch: "+err.Error())
+		w.errf(rawURL, fmt.Sprintf("fetch: %v", err))
 		return
 	}
 
