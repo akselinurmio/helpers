@@ -46,7 +46,12 @@ func reportDuplicates(sourceURL string, s *sitemap) {
 	}
 }
 
-func walkSitemapTree(url string) error {
+func walkSitemapTree(url string, seen map[string]struct{}) error {
+	if _, visited := seen[url]; visited {
+		return nil
+	}
+	seen[url] = struct{}{}
+
 	s, err := fetch(url)
 	if err != nil {
 		return err
@@ -57,7 +62,7 @@ func walkSitemapTree(url string) error {
 		return nil
 	case "sitemapindex":
 		for _, sm := range s.Sitemaps {
-			if err := walkSitemapTree(sm); err != nil {
+			if err := walkSitemapTree(sm, seen); err != nil {
 				return err
 			}
 		}
@@ -72,8 +77,9 @@ func main() {
 		fmt.Fprintln(os.Stderr, "usage: sitemap-dupes <sitemap-url> [<sitemap-url>...]")
 		os.Exit(2)
 	}
+	seen := make(map[string]struct{})
 	for _, url := range os.Args[1:] {
-		if err := walkSitemapTree(url); err != nil {
+		if err := walkSitemapTree(url, seen); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
