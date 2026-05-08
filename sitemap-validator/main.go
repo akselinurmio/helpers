@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -100,6 +101,9 @@ func fetch(rawURL string) ([]byte, error) {
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("HTTP %s", resp.Status)
+	}
+	if ct := resp.Header.Get("Content-Type"); !strings.Contains(ct, "xml") {
+		return nil, fmt.Errorf("GET %s: unexpected content-type %q", rawURL, ct)
 	}
 	return io.ReadAll(resp.Body)
 }
@@ -200,7 +204,7 @@ func (w *walker) walk(rawURL string) {
 	case "sitemapindex":
 		w.validateSitemapIndex(rawURL, data)
 	default:
-		w.errf(rawURL, fmt.Sprintf("root element %q, want <urlset> or <sitemapindex>", root.Local))
+		w.errf(rawURL, fmt.Sprintf("root element <%s>, want <urlset> or <sitemapindex>", root.Local))
 	}
 }
 
