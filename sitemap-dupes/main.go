@@ -3,11 +3,8 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
-	"io"
-	"maps"
 	"net/http"
 	"os"
-	"slices"
 	"strings"
 )
 
@@ -24,36 +21,16 @@ func fetch(url string) (*sitemap, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("GET %s : %s", url, resp.Status)
+		return nil, fmt.Errorf("GET %s: %s", url, resp.Status)
 	}
 	if ct := resp.Header.Get("Content-Type"); !strings.Contains(ct, "xml") {
-		return nil, fmt.Errorf("GET %s : unexpected content-type %q", url, ct)
+		return nil, fmt.Errorf("GET %s: unexpected content-type %q", url, ct)
 	}
 	var s sitemap
-	if err := xml.NewDecoder(xmlSanitizer{resp.Body}).Decode(&s); err != nil {
-		return nil, fmt.Errorf("parse %s : %w", url, err)
+	if err := xml.NewDecoder(resp.Body).Decode(&s); err != nil {
+		return nil, fmt.Errorf("%s: %w", url, err)
 	}
 	return &s, nil
-}
-
-type xmlSanitizer struct{ r io.Reader }
-
-func (s xmlSanitizer) Read(p []byte) (int, error) {
-	for {
-		n, err := s.r.Read(p)
-		j := 0
-		for i := range n {
-			c := p[i]
-			if c < 0x20 && c != '\t' && c != '\n' && c != '\r' {
-				continue
-			}
-			p[j] = c
-			j++
-		}
-		if j > 0 || err != nil {
-			return j, err
-		}
-	}
 }
 
 func reportDuplicates(sourceURL string, s *sitemap) {
@@ -61,9 +38,10 @@ func reportDuplicates(sourceURL string, s *sitemap) {
 	for _, u := range s.URLs {
 		counts[u]++
 	}
-	for _, u := range slices.Sorted(maps.Keys(counts)) {
-		if n := counts[u]; n > 1 {
-			fmt.Printf("%d\t%s\t%s\n", n, u, sourceURL)
+	for _, u := range s.URLs {
+		if counts[u] > 1 {
+			fmt.Printf("%d\t%s\t%s\n", counts[u], u, sourceURL)
+			delete(counts, u)
 		}
 	}
 }
