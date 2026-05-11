@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: sitemap-dupes/go.mod
+          cache: false
+
+      - name: Check sitemap-dupes
+        working-directory: sitemap-dupes
+        run: |
+          go build ./...
+          go vet ./...
+          test -z "$(gofmt -l .)"
+
+      - name: Check sitemap-validator
+        working-directory: sitemap-validator
+        run: |
+          go build ./...
+          go vet ./...
+          test -z "$(gofmt -l .)"
